@@ -1,0 +1,31 @@
+# role-dashboard — single-service stack (Nuxt 4 SPA + Nitro /api proxies).
+#
+# Local dev:  cp .env.example .env  →  fill in NUXT_ALCHEMY_API_KEY  →
+#             docker compose up -d --build
+# Production: the image is built by CI and pushed to GHCR; the deploy workflow
+#             writes /opt/role-dashboard/.env on the server pinning DASHBOARD_IMAGE
+#             to an immutable ghcr.io sha tag and rendering the NUXT_* runtime config.
+#             Hand edits to the server .env do not survive a deploy.
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "3"
+
+services:
+  role-dashboard:
+    build: .
+    image: ${DASHBOARD_IMAGE:-role-dashboard:latest}
+    restart: unless-stopped
+    logging: *default-logging
+    ports:
+      - "3000:3000"
+    # Runtime config, read at container start (Nuxt NUXT_* convention) — no
+    # rebuild needed when values change, only `docker compose up -d`.
+    env_file: .env
+    extra_hosts:
+      # The realXmarket indexer runs on the SAME host and publishes its GraphQL
+      # API on host port 3010, so NUXT_INDEXER_URL can point at
+      # http://host.docker.internal:3010/graphql from inside this container.
+      - "host.docker.internal:host-gateway"

@@ -1,0 +1,153 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/dm-sans';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Design tokens translated from realXmarketMobileApp
+ * (XcavateMobileApp/Resources/Styles/Colors.xaml + Styles.xaml).
+ *
+ * Raw palette values stay in --rx-* custom properties; semantic tokens
+ * (--page, --surface, ...) resolve through light-dark() so they follow the
+ * root color-scheme: system by default, or the pinned .light/.dark class set
+ * by the theme toggle. Tailwind theme keys below just alias those variables.
+ */
+:root {
+  color-scheme: light dark;
+
+  /* raw brand palette */
+  --rx-blue: #3b4f74; /* Primary */
+  --rx-blue-dim: #627290; /* PrimaryUnimportant */
+  --rx-lavender: #dfd8f7; /* Secondary */
+  --rx-cyan: #65def1; /* Tertiary */
+  --rx-cyan-deep: #57a0c5; /* gradient stop / nav highlight */
+  --rx-green: #357461; /* Positive */
+  --rx-pink: #dc7da6; /* Negative (errors are muted pink, not red) */
+  --rx-sand: #ecb278; /* gradient stop */
+  --rx-gray-50: #f0f0f0;
+  --rx-gray-100: #e1e1e1;
+  --rx-gray-200: #c8c8c8;
+  --rx-gray-300: #acacac;
+  --rx-gray-400: #919191;
+  --rx-gray-500: #6e6e6e;
+  --rx-gray-600: #404040;
+  --rx-gray-900: #212121;
+  --rx-gray-950: #141414;
+
+  /* semantic tokens (follow color-scheme) */
+  --page: light-dark(#ffffff, #0a0a0a);
+  --surface: light-dark(#ffffff, #000000);
+  --surface-muted: light-dark(#f0f0f0, #141414);
+  --surface-tint: light-dark(#0d3b4f74, #0d3b4f74); /* text-card tint, both themes */
+  --ink: light-dark(#212121, #ffffff);
+  --ink-muted: light-dark(#6e6e6e, #a6a6a6);
+  --ink-faint: light-dark(#acacac, #6e6e6e);
+  --line: light-dark(#c8c8c8, #404040);
+  --primary-btn: light-dark(#3b4f74, #ffffff); /* dark mode inverts primary buttons */
+  --primary-btn-ink: light-dark(#ffffff, #3b4f74);
+  --badge-bg: #22888888;
+  --nav-pill: #1757a0c5;
+  --backdrop: #66000000;
+
+  scrollbar-color: light-dark(#acacac, #404040) transparent;
+  accent-color: var(--rx-blue);
+}
+
+:root.light {
+  color-scheme: light;
+}
+:root.dark {
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-tint: var(--surface-tint);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-line: var(--line);
+  --color-primary: var(--rx-blue);
+  --color-primary-dim: var(--rx-blue-dim);
+  --color-primary-btn: var(--primary-btn);
+  --color-primary-btn-ink: var(--primary-btn-ink);
+  --color-secondary: var(--rx-lavender);
+  --color-tertiary: var(--rx-cyan);
+  --color-positive: var(--rx-green);
+  --color-negative: var(--rx-pink);
+  --color-badge: var(--badge-bg);
+  --color-nav-pill: var(--nav-pill);
+  --color-backdrop: var(--backdrop);
+  --color-gray-50: var(--rx-gray-50);
+  --color-gray-100: var(--rx-gray-100);
+  --color-gray-200: var(--rx-gray-200);
+  --color-gray-300: var(--rx-gray-300);
+  --color-gray-400: var(--rx-gray-400);
+  --color-gray-500: var(--rx-gray-500);
+  --color-gray-600: var(--rx-gray-600);
+  --color-gray-900: var(--rx-gray-900);
+  --color-gray-950: var(--rx-gray-950);
+
+  --font-sans: 'DM Sans Variable', 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Source Code Pro', ui-monospace, monospace;
+
+  --radius-card: 10px;
+  --radius-button: 24px;
+  --radius-badge: 5px;
+  --radius-sheet: 20px;
+
+  --shadow-card: 0 2px 20px rgb(0 0 0 / 0.1);
+  --shadow-bar: 0 0 2px rgb(0 0 0 / 0.16);
+
+  --spacing-gap: 8px;
+  --spacing-page-x: 20px;
+  --spacing-stack: 15px;
+}
+
+@layer base {
+  html {
+    text-size-adjust: none;
+    -webkit-text-size-adjust: none;
+  }
+
+  body {
+    background-color: var(--page);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+  }
+
+  /* The app routes all bold text to the ExtraBold (800) cut. */
+  b,
+  strong,
+  th {
+    font-weight: 800;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--rx-blue) 25%, transparent);
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+}
+
+@layer utilities {
+  /* The app's single signature brand gradient (SliderView.xaml). */
+  .bg-brand-gradient {
+    background-image: linear-gradient(
+      to right,
+      var(--rx-sand) 10%,
+      var(--rx-pink) 40%,
+      var(--rx-blue) 70%,
+      var(--rx-cyan-deep) 100%
+    );
+  }
+}

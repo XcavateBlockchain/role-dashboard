@@ -1,0 +1,156 @@
+name: Deploy to Hetzner
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never run two deploys at once; queue instead of cancelling a running one.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  DEPLOY_DIR: /opt/role-dashboard
+
+jobs:
+  build-and-push:
+    name: Build & push image
+    runs-on: ubuntu-latest
+    outputs:
+      repo_lc: ${{ steps.vars.outputs.repo_lc }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute lowercase image repo
+        id: vars
+        run: echo "repo_lc=${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push dashboard image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ steps.vars.outputs.repo_lc }}:latest
+            ghcr.io/${{ steps.vars.outputs.repo_lc }}:${{ github.sha }}
+          cache-from: type=gha,scope=role-dashboard
+          cache-to: type=gha,scope=role-dashboard,mode=max
+
+  deploy:
+    name: Deploy to server
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up SSH
+        env:
+          SSH_KEY: ${{ secrets.HETZNER_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.HETZNER_KNOWN_HOSTS }}
+          HOST: ${{ secrets.HETZNER_HOST }}
+          PORT: ${{ secrets.HETZNER_SSH_PORT || '22' }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          if [ -n "$KNOWN_HOSTS" ]; then
+            printf '%s\n' "$KNOWN_HOSTS" >> ~/.ssh/known_hosts
+          else
+            ssh-keyscan -p "$PORT" -H "$HOST" >> ~/.ssh/known_hosts
+          fi
+          cat > ~/.ssh/config <<EOF
+          Host deploy-target
+            HostName $HOST
+            Port $PORT
+            User ${{ secrets.HETZNER_USER }}
+            IdentityFile ~/.ssh/id_deploy
+            IdentitiesOnly yes
+          EOF
+
+      - name: Render server .env
+        env:
+          REPO_LC: ${{ needs.build-and-push.outputs.repo_lc }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          # Optional: unset = the indexer on the same host, published on port 3010,
+          # reached through compose's host.docker.internal mapping.
+          INDEXER_URL: ${{ secrets.INDEXER_URL || 'http://host.docker.internal:3010/graphql' }}
+        run: |
+          # Secrets are written single-quoted: docker compose's dotenv parser
+          # takes single-quoted values literally, so `$`, spaces and `#` in a
+          # secret survive. Values compose cannot represent are rejected.
+          #
+          # An unset required secret is rejected too: compose would otherwise
+          # silently start the dashboard without its RPC key and the /api/rpc
+          # proxy would fail at request time with an opaque 500.
+          dotenv_secret() {
+            if [ -z "$2" ]; then
+              echo "::error::secret $1 is not set — add it under Settings → Secrets and variables → Actions" >&2
+              exit 1
+            fi
+            case "$2" in
+              *\'* | *$'\n'* )
+                echo "::error::secret $1 must not contain single quotes or newlines" >&2
+                exit 1;;
+            esac
+            printf "%s='%s'\n" "$1" "$2"
+          }
+          # COMPLETENESS CONTRACT: this block must render EVERY line compose can
+          # read from .env (see the `env_file:` entry and `${DASHBOARD_IMAGE}`
+          # reference in docker-compose.yml). The server file is replaced
+          # wholesale on every deploy, so a value that is not rendered here
+          # cannot be set at all -- hand edits do not survive.
+          {
+            echo "DASHBOARD_IMAGE=ghcr.io/$REPO_LC:${{ github.sha }}"
+            dotenv_secret NUXT_ALCHEMY_API_KEY "$ALCHEMY_API_KEY"
+            dotenv_secret NUXT_INDEXER_URL "$INDEXER_URL"
+            echo "NUXT_PUBLIC_CLUSTER=devnet"
+          } > server.env
+
+      - name: Upload compose file and .env
+        run: |
+          ssh deploy-target "mkdir -p $DEPLOY_DIR"
+          scp docker-compose.yml deploy-target:$DEPLOY_DIR/docker-compose.yml
+          scp server.env deploy-target:$DEPLOY_DIR/.env
+          ssh deploy-target "chmod 600 $DEPLOY_DIR/.env"
+
+      - name: Pull image and restart
+        env:
+          GHCR_PULL_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
+        run: |
+          if [ -n "$GHCR_PULL_TOKEN" ]; then
+            ssh deploy-target "echo '$GHCR_PULL_TOKEN' | docker login ghcr.io -u '${{ github.actor }}' --password-stdin"
+          fi
+          ssh deploy-target "cd $DEPLOY_DIR && docker compose pull && docker compose up -d --remove-orphans"
+
+      - name: Smoke check
+        run: |
+          ssh deploy-target 'for i in $(seq 1 12); do
+            if curl -fsS -o /dev/null http://localhost:3000/; then
+              echo "role-dashboard responds on http://localhost:3000/"
+              exit 0
+            fi
+            echo "attempt $i/12: not up yet, waiting 5s"
+            sleep 5
+          done
+          echo "::error::role-dashboard did not respond on http://localhost:3000/ within 60s" >&2
+          cd /opt/role-dashboard && docker compose ps && docker compose logs --tail=80 role-dashboard
+          exit 1'
+
+      # Remove images unused for 7+ days (keeps recent SHA tags around for the
+      # .env-pin rollback path documented in README.md).
+      - name: Prune old images
+        run: |
+          ssh deploy-target "docker image prune -af --filter 'until=168h' >/dev/null"

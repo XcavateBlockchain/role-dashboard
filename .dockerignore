@@ -1,0 +1,20 @@
+# Dependencies & build artifacts — rebuilt inside the image
+node_modules
+.nuxt
+.output
+.data
+dist
+
+# VCS & CI
+.git
+.github
+
+# Local env files — never baked into the image; runtime config comes from
+# NUXT_* env vars (compose env_file / docker run --env-file) at container start
+.env
+.env.*
+!.env.example
+
+# Logs & OS noise
+*.log
+.DS_Store
