@@ -350,8 +350,6 @@ async function runConfirm() {
       </template>
     </UiCard>
 
-    <RolesCheckAccessTool />
-
     <RolesAssignRoleModal
       :open="assignOpen"
       @close="assignOpen = false"

@@ -15,13 +15,13 @@ const props = withDefaults(
 // Pill button (48px, radius 24, extrabold) from the mobile app's Styles.xaml.
 const VARIANTS: Record<UiButtonVariant, string> = {
   primary:
-    'bg-primary-btn text-primary-btn-ink border-2 border-transparent hover:opacity-90 disabled:bg-primary-dim disabled:text-primary-btn-ink',
+    'bg-primary-btn text-primary-btn-ink border-2 border-transparent hover:bg-primary hover:text-white disabled:bg-primary-dim disabled:text-primary-btn-ink',
   secondary:
-    'bg-transparent text-primary border-2 border-primary hover:bg-surface-tint disabled:border-primary-dim disabled:text-primary-dim',
+    'bg-transparent text-primary border-2 border-primary hover:bg-primary hover:text-white disabled:border-primary-dim disabled:text-primary-dim',
   danger:
-    'bg-transparent text-negative border-2 border-negative hover:bg-negative/10 disabled:border-primary-dim disabled:text-primary-dim',
+    'bg-transparent text-negative border-2 border-negative hover:bg-primary hover:text-white disabled:border-primary-dim disabled:text-primary-dim',
   ghost:
-    'bg-transparent text-primary border-2 border-transparent hover:bg-surface-muted disabled:text-primary-dim',
+    'bg-transparent text-primary border-2 border-transparent hover:bg-primary hover:text-white disabled:text-primary-dim',
 }
 </script>
 

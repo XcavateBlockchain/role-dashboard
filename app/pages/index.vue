@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SyncStatus, WhitelistAction } from '~/lib/indexer/types'
+import type { WhitelistAction } from '~/lib/indexer/types'
 import { ROLES, actionLabel, roleLabel, type RoleMeta } from '~/lib/whitelist/constants'
 
 type BadgeTone = 'neutral' | 'success' | 'error' | 'info' | 'cyan'
@@ -18,10 +18,6 @@ const recentActions = ref<WhitelistAction[]>([])
 const config = access.config
 const accessLoading = access.loading
 const accessError = access.error
-
-const sync = ref<SyncStatus | null>(null)
-const syncError = ref<string | null>(null)
-let syncTimer: ReturnType<typeof setInterval> | undefined
 
 const compliantShare = computed(() =>
   stats.value.activeAssignments > 0
@@ -48,16 +44,6 @@ function actionTone(action: WhitelistAction): BadgeTone {
   if (action.type.startsWith('ROLE_')) return 'neutral'
   return 'info'
 }
-
-const syncCells = computed(() => {
-  if (!sync.value) return []
-  return [
-    { label: 'Chain tip', value: sync.value.chainTipSlot.toLocaleString() },
-    { label: 'Indexed slot', value: sync.value.lastContiguousSlot.toLocaleString() },
-    { label: 'Slot lag', value: sync.value.slotLag.toLocaleString() },
-    { label: 'Backfill', value: sync.value.backfillComplete ? 'complete' : 'in progress' },
-  ]
-})
 
 async function load() {
   loading.value = true
@@ -94,24 +80,9 @@ async function load() {
   }
 }
 
-async function loadSync() {
-  try {
-    sync.value = await indexer.getSyncStatus()
-    syncError.value = null
-  } catch (e) {
-    syncError.value = e instanceof Error ? e.message : String(e)
-  }
-}
-
 onMounted(() => {
   load()
-  loadSync()
   access.refresh()
-  syncTimer = setInterval(loadSync, 15_000)
-})
-
-onBeforeUnmount(() => {
-  clearInterval(syncTimer)
 })
 </script>
 
@@ -145,70 +116,46 @@ onBeforeUnmount(() => {
         </UiStatCell>
       </div>
 
-      <div class="grid gap-4 lg:grid-cols-2">
-        <!-- Config -->
-        <UiCard>
-          <h2 class="mb-3 text-sm font-extrabold">Configuration</h2>
-          <dl v-if="config" class="flex flex-col gap-3">
-            <div class="flex items-center justify-between gap-3">
-              <dt class="shrink-0 text-xs text-ink-muted">Authority</dt>
-              <dd><UiAddress :address="config.authority" :chars="6" link /></dd>
-            </div>
-            <div
-              v-if="config.pendingAuthority"
-              class="flex items-center justify-between gap-3"
-            >
-              <dt class="shrink-0 text-xs text-ink-muted">Pending authority</dt>
-              <dd class="flex flex-wrap items-center justify-end gap-2">
-                <UiAddress :address="config.pendingAuthority" :chars="6" link />
-                <UiBadge tone="cyan">handover pending</UiBadge>
-              </dd>
-            </div>
-            <div class="flex items-center justify-between gap-3">
-              <dt class="shrink-0 text-xs text-ink-muted">Updated at slot</dt>
-              <dd class="font-mono text-[13px]">{{ config.updatedAtSlot.toLocaleString() }}</dd>
-            </div>
-            <div class="flex items-center justify-between gap-3">
-              <dt class="shrink-0 text-xs text-ink-muted">Last updated</dt>
-              <dd class="text-xs">{{ formatDateTime(config.updatedAt) }}</dd>
-            </div>
-          </dl>
-          <div v-else-if="accessLoading" class="flex justify-center py-8">
-            <UiSpinner />
+      <!-- Config -->
+      <UiCard>
+        <h2 class="mb-3 text-sm font-extrabold">Configuration</h2>
+        <dl v-if="config" class="flex flex-col gap-3">
+          <div class="flex items-center justify-between gap-3">
+            <dt class="shrink-0 text-xs text-ink-muted">Authority</dt>
+            <dd><UiAddress :address="config.authority" :chars="6" link /></dd>
           </div>
-          <div v-else-if="accessError" class="flex flex-col items-center gap-3 py-6 text-center">
-            <p class="text-xs text-negative">{{ accessError }}</p>
-            <UiButton variant="secondary" @click="access.refresh()">Retry</UiButton>
+          <div
+            v-if="config.pendingAuthority"
+            class="flex items-center justify-between gap-3"
+          >
+            <dt class="shrink-0 text-xs text-ink-muted">Pending authority</dt>
+            <dd class="flex flex-wrap items-center justify-end gap-2">
+              <UiAddress :address="config.pendingAuthority" :chars="6" link />
+              <UiBadge tone="cyan">handover pending</UiBadge>
+            </dd>
           </div>
-          <UiEmptyState v-else title="Whitelist not initialized">
-            <template #icon>
-              <NavIcon name="authority" :size="28" />
-            </template>
-          </UiEmptyState>
-        </UiCard>
-
-        <!-- Sync status -->
-        <UiCardTint>
-          <div class="mb-3 flex items-center justify-between gap-2">
-            <h2 class="text-sm font-extrabold">Indexer sync</h2>
-            <UiBadge v-if="sync" :tone="sync.slotLag < 50 ? 'success' : 'error'">
-              {{ sync.slotLag < 50 ? 'in sync' : 'lagging' }}
-            </UiBadge>
+          <div class="flex items-center justify-between gap-3">
+            <dt class="shrink-0 text-xs text-ink-muted">Updated at slot</dt>
+            <dd class="font-mono text-[13px]">{{ config.updatedAtSlot.toLocaleString() }}</dd>
           </div>
-          <div v-if="sync" class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <div v-for="cell in syncCells" :key="cell.label" class="flex flex-col gap-0.5">
-              <span class="text-xs text-ink-muted">{{ cell.label }}</span>
-              <span class="text-sm font-extrabold">{{ cell.value }}</span>
-            </div>
+          <div class="flex items-center justify-between gap-3">
+            <dt class="shrink-0 text-xs text-ink-muted">Last updated</dt>
+            <dd class="text-xs">{{ formatDateTime(config.updatedAt) }}</dd>
           </div>
-          <UiEmptyState v-else-if="syncError" title="Sync status unavailable" :hint="syncError">
-            <UiButton variant="secondary" class="mt-2" @click="loadSync">Retry</UiButton>
-          </UiEmptyState>
-          <div v-else class="flex justify-center py-8">
-            <UiSpinner />
-          </div>
-        </UiCardTint>
-      </div>
+        </dl>
+        <div v-else-if="accessLoading" class="flex justify-center py-8">
+          <UiSpinner />
+        </div>
+        <div v-else-if="accessError" class="flex flex-col items-center gap-3 py-6 text-center">
+          <p class="text-xs text-negative">{{ accessError }}</p>
+          <UiButton variant="secondary" @click="access.refresh()">Retry</UiButton>
+        </div>
+        <UiEmptyState v-else title="Whitelist not initialized">
+          <template #icon>
+            <NavIcon name="authority" :size="28" />
+          </template>
+        </UiEmptyState>
+      </UiCard>
 
       <!-- Role distribution -->
       <UiCard>
