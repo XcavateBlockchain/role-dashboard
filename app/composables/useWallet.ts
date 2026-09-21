@@ -112,6 +112,40 @@ async function prepareMessage(
   return { bytes: tx.serialize(), blockhash, lastValidBlockHeight }
 }
 
+/**
+ * Wait for a sent transaction to confirm via plain HTTP polling. The `/api/rpc`
+ * proxy has no WebSocket upstream, so web3.js `confirmTransaction` (which
+ * subscribes via `onSignature` over WS) cannot be used here.
+ */
+async function confirmSignature(
+  connection: Connection,
+  signature: string,
+  lastValidBlockHeight: number,
+): Promise<void> {
+  for (;;) {
+    const { value } = await connection.getSignatureStatuses([signature])
+    const status = value[0]
+    if (status) {
+      if (status.err) {
+        throw new Error(`Transaction failed: ${JSON.stringify(status.err)}`)
+      }
+      if (status.confirmationStatus === 'confirmed' || status.confirmationStatus === 'finalized') {
+        return
+      }
+    }
+    let expired = false
+    try {
+      expired = (await connection.getBlockHeight('confirmed')) > lastValidBlockHeight
+    } catch {
+      // Transient RPC hiccup — keep polling until the status resolves.
+    }
+    if (expired) {
+      throw new Error('Transaction expired before it was confirmed — try again')
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+  }
+}
+
 export function useWallet(): UseWallet {
   const wallets = useState<WalletOption[]>('wallet.wallets', () => [])
   const walletName = useState<string | null>('wallet.name', () => null)
@@ -241,17 +275,7 @@ export function useWallet(): UseWallet {
         const signature = await connection.sendRawTransaction(output.signedTransaction, {
           preflightCommitment: 'confirmed',
         })
-        const confirmation = await connection.confirmTransaction(
-          {
-            signature,
-            blockhash: prepared.blockhash,
-            lastValidBlockHeight: prepared.lastValidBlockHeight,
-          },
-          'confirmed',
-        )
-        if (confirmation.value.err) {
-          throw new Error(`Transaction failed: ${JSON.stringify(confirmation.value.err)}`)
-        }
+        await confirmSignature(connection, signature, prepared.lastValidBlockHeight)
         return signature
       }
       if (SolanaSignAndSendTransaction in wallet.features) {

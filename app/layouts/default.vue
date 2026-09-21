@@ -57,21 +57,19 @@ const clusterLabel = computed(
           {{ item.label }}
         </NuxtLink>
       </nav>
+      <div class="flex flex-col gap-3 border-t border-line/50 p-4">
+        <div class="flex min-w-0 items-center justify-between gap-2">
+          <h1 class="truncate text-sm font-extrabold">{{ pageTitle }}</h1>
+          <UiBadge tone="cyan" class="shrink-0">{{ clusterLabel }}</UiBadge>
+        </div>
+        <div class="flex items-center gap-2">
+          <WalletButton class="min-w-0 flex-1" />
+          <ThemeToggle />
+        </div>
+      </div>
     </aside>
 
     <div class="flex min-h-screen flex-col md:pl-64">
-      <!-- Topbar -->
-      <header
-        class="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-line/50 bg-page/80 px-4 backdrop-blur md:px-6"
-      >
-        <h1 class="truncate text-base font-extrabold">{{ pageTitle }}</h1>
-        <UiBadge tone="cyan" class="shrink-0">{{ clusterLabel }}</UiBadge>
-        <div class="ml-auto flex shrink-0 items-center gap-2">
-          <ThemeToggle />
-          <WalletButton />
-        </div>
-      </header>
-
       <main class="flex-1 px-4 pb-24 pt-5 md:px-6 md:pb-6">
         <slot />
       </main>
