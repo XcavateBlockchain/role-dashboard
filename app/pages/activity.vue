@@ -155,11 +155,6 @@ onBeforeUnmount(stopAutoRefresh)
       <UiEmptyState
         v-else-if="!hasRows"
         :title="hasActiveFilters ? 'No actions match these filters' : 'No actions yet'"
-        :hint="
-          hasActiveFilters
-            ? 'Try widening the filters or clearing them.'
-            : 'No actions recorded yet — the indexer may still be backfilling.'
-        "
       >
         <template #icon>
           <NavIcon name="activity" :size="28" />

@@ -8,7 +8,7 @@ const TONES: Record<UiBadgeTone, string> = {
   success: 'bg-positive text-white',
   error: 'bg-negative text-gray-900',
   info: 'bg-primary text-white',
-  cyan: 'bg-tertiary text-gray-900',
+  cyan: 'bg-tertiary text-white',
 }
 </script>
 

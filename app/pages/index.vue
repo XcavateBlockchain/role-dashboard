@@ -184,12 +184,6 @@ onBeforeUnmount(() => {
             <template #icon>
               <NavIcon name="authority" :size="28" />
             </template>
-            <p class="text-xs text-ink-muted">
-              Connect the authority wallet and initialize the config from the
-              <NuxtLink to="/authority" class="font-extrabold text-primary underline"
-                >Authority page</NuxtLink
-              >.
-            </p>
           </UiEmptyState>
         </UiCard>
 
@@ -227,7 +221,6 @@ onBeforeUnmount(() => {
             v-for="{ role, count } in roleCounts"
             :key="role.gql"
             class="flex items-center gap-3"
-            :title="role.description"
           >
             <span class="w-28 shrink-0 truncate text-xs sm:w-40">{{ role.label }}</span>
             <div class="h-2 flex-1 overflow-hidden rounded-full bg-surface-muted">
@@ -239,11 +232,7 @@ onBeforeUnmount(() => {
             <span class="w-10 shrink-0 text-right text-xs font-extrabold">{{ count }}</span>
           </div>
         </div>
-        <UiEmptyState
-          v-else
-          title="No active assignments"
-          hint="Assign a role from the Roles page to see the distribution."
-        >
+        <UiEmptyState v-else title="No active assignments">
           <template #icon>
             <NavIcon name="roles" :size="28" />
           </template>
@@ -292,11 +281,7 @@ onBeforeUnmount(() => {
             </a>
           </div>
         </div>
-        <UiEmptyState
-          v-else
-          title="No activity yet"
-          hint="Indexed whitelist instructions will appear here."
-        >
+        <UiEmptyState v-else title="No activity yet">
           <template #icon>
             <NavIcon name="activity" :size="28" />
           </template>

@@ -70,9 +70,6 @@ async function submit() {
             {{ role.label }}
           </option>
         </UiSelect>
-        <p v-if="selectedRole" class="mt-1 text-xs text-ink-muted">
-          {{ selectedRole.description }}
-        </p>
       </div>
     </form>
 

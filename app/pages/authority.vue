@@ -123,11 +123,7 @@ async function submitInitialize() {
           Retry
         </UiButton>
       </div>
-      <UiEmptyState
-        v-else-if="!config"
-        title="Config not initialized"
-        hint="The whitelist config account has not been created yet. Initialize it below."
-      />
+      <UiEmptyState v-else-if="!config" title="Config not initialized" />
       <div v-else class="mt-3 flex flex-col gap-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <span class="text-xs text-ink-muted">Authority</span>
@@ -144,10 +140,6 @@ async function submitInitialize() {
               <UiBadge tone="cyan">handover pending</UiBadge>
             </span>
           </div>
-          <p class="text-xs text-ink-muted">
-            The proposed authority must sign Accept to complete the handover. Proposing again
-            overwrites the proposal.
-          </p>
         </template>
         <div class="flex flex-wrap items-center justify-between gap-2">
           <span class="text-xs text-ink-muted">Updated</span>
@@ -161,15 +153,7 @@ async function submitInitialize() {
     <!-- Propose new authority -->
     <UiCard>
       <h2 class="text-sm font-extrabold">Propose new authority</h2>
-      <p class="mt-1 text-xs text-ink-muted">
-        The current authority proposes a replacement key. The handover only takes effect once the
-        new key accepts it.
-      </p>
-      <UiEmptyState
-        v-if="!isAuthority"
-        title="Authority wallet required"
-        hint="Connect with the current authority wallet"
-      />
+      <UiEmptyState v-if="!isAuthority" title="Authority wallet required" />
       <form v-else class="mt-3 flex flex-col gap-3" @submit.prevent="submitPropose">
         <UiInput
           v-model="newAuthority"
@@ -187,11 +171,6 @@ async function submitInitialize() {
     <!-- Accept handover -->
     <UiCard v-if="config?.pendingAuthority">
       <h2 class="text-sm font-extrabold">Accept handover</h2>
-      <p class="mt-1 text-xs text-ink-muted">
-        A handover is in progress. Accepting moves full control of the whitelist — admins, roles
-        and future authority changes — from the current authority to the pending key. Only the
-        pending authority wallet can sign this.
-      </p>
       <div class="mt-3 flex flex-wrap items-center justify-between gap-2">
         <span class="text-xs text-ink-muted">Pending authority</span>
         <UiAddress :address="config.pendingAuthority" :chars="6" link />
@@ -213,15 +192,6 @@ async function submitInitialize() {
     <!-- Initialize config -->
     <UiCard v-if="loaded && !accessError && !config">
       <h2 class="text-sm font-extrabold">Initialize config</h2>
-      <p class="mt-1 text-xs text-ink-muted">
-        The whitelist config is a singleton account that can only be created once, and only by the
-        program's upgrade authority — the key allowed to deploy program upgrades — which is not
-        necessarily an admin.
-      </p>
-      <p class="mt-2 text-xs text-ink-muted">
-        The connected wallet signs as the authority, no input is needed. Any other wallet will fail
-        with NotUpgradeAuthority.
-      </p>
       <div class="mt-3 flex flex-wrap items-center gap-3">
         <UiButton :disabled="!connected" :loading="initializeLoading" @click="submitInitialize">
           Initialize config
@@ -242,11 +212,7 @@ async function submitInitialize() {
           Retry
         </UiButton>
       </div>
-      <UiEmptyState
-        v-else-if="!upgrades.length"
-        title="No upgrades recorded"
-        hint="The indexer has not recorded any program upgrades yet."
-      />
+      <UiEmptyState v-else-if="!upgrades.length" title="No upgrades recorded" />
       <ul v-else class="mt-2 flex flex-col divide-y divide-line">
         <li
           v-for="upgrade in upgrades"

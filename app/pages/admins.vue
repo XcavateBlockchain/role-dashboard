@@ -75,19 +75,13 @@ onMounted(() => {
 
 onBeforeUnmount(() => clearTimeout(refetchTimer))
 
-const authorityShort = computed(() =>
-  config.value ? truncateAddress(config.value.authority, 6) : '…',
+const emptyTitle = computed(() =>
+  filter.value === 'removed'
+    ? 'No removed admins'
+    : filter.value === 'all'
+      ? 'No admins yet'
+      : 'No active admins',
 )
-
-const emptyCopy = computed(() => {
-  if (filter.value === 'removed') {
-    return { title: 'No removed admins', hint: 'Admins removed by the authority appear here.' }
-  }
-  if (filter.value === 'all') {
-    return { title: 'No admins yet', hint: 'Admins added by the sudo authority appear here.' }
-  }
-  return { title: 'No active admins', hint: 'Admins added by the sudo authority appear here.' }
-})
 
 // Add admin modal
 const addOpen = ref(false)
@@ -162,11 +156,7 @@ async function confirmRemove() {
     <!-- Header -->
     <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
       <div class="max-w-xl">
-        <p class="text-sm text-ink-muted">
-          Whitelist admins can assign roles and set compliance; only the sudo authority manages
-          admins
-        </p>
-        <div class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
           <span class="text-ink-muted">Current authority:</span>
           <UiAddress v-if="config" :address="config.authority" link />
           <UiSpinner v-else :size="14" class="text-ink-muted" />
@@ -178,12 +168,7 @@ async function confirmRemove() {
           </NuxtLink>
         </div>
       </div>
-      <div class="flex flex-col items-end gap-1">
-        <UiButton :disabled="!isAuthority" @click="openAdd">Add admin</UiButton>
-        <p v-if="!isAuthority" class="text-xs text-ink-muted">
-          Only the sudo authority ({{ authorityShort }}) can add admins
-        </p>
-      </div>
+      <UiButton :disabled="!isAuthority" @click="openAdd">Add admin</UiButton>
     </div>
 
     <!-- Filter tabs -->
@@ -232,7 +217,7 @@ async function confirmRemove() {
         <UiButton variant="secondary" class="mt-3" @click="fetchAdmins">Retry</UiButton>
       </UiEmptyState>
 
-      <UiEmptyState v-else-if="admins.length === 0" :title="emptyCopy.title" :hint="emptyCopy.hint">
+      <UiEmptyState v-else-if="admins.length === 0" :title="emptyTitle">
         <template #icon>
           <svg
             width="32"
@@ -342,7 +327,6 @@ async function confirmRemove() {
       <p v-if="removeTarget" class="text-sm text-ink-muted">
         Removing
         <UiAddress :address="removeTarget.id" :chars="6" class="text-ink" />
-        refunds its account rent to the authority
       </p>
       <div class="mt-5 flex justify-end gap-2">
         <UiButton variant="ghost" :disabled="removeLoading" @click="closeRemove">Cancel</UiButton>

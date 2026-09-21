@@ -16,11 +16,8 @@
   color-scheme: light dark;
 
   /* raw brand palette */
-  --rx-blue: #3b4f74; /* Primary */
-  --rx-blue-dim: #627290; /* PrimaryUnimportant */
-  --rx-lavender: #dfd8f7; /* Secondary */
-  --rx-cyan: #65def1; /* Tertiary */
-  --rx-cyan-deep: #57a0c5; /* gradient stop / nav highlight */
+  --rx-blue: #3b4f74; /* Primary — the only blue; everything else derives from it */
+  --rx-blue-dim: color-mix(in srgb, var(--rx-blue) 55%, white); /* PrimaryUnimportant */
   --rx-green: #357461; /* Positive */
   --rx-pink: #dc7da6; /* Negative (errors are muted pink, not red) */
   --rx-sand: #ecb278; /* gradient stop */
@@ -46,7 +43,7 @@
   --primary-btn: light-dark(#3b4f74, #ffffff); /* dark mode inverts primary buttons */
   --primary-btn-ink: light-dark(#ffffff, #3b4f74);
   --badge-bg: #22888888;
-  --nav-pill: #1757a0c5;
+  --nav-pill: #3b4f74; /* active nav highlight */
   --backdrop: #66000000;
 
   scrollbar-color: light-dark(#acacac, #404040) transparent;
@@ -73,8 +70,7 @@
   --color-primary-dim: var(--rx-blue-dim);
   --color-primary-btn: var(--primary-btn);
   --color-primary-btn-ink: var(--primary-btn-ink);
-  --color-secondary: var(--rx-lavender);
-  --color-tertiary: var(--rx-cyan);
+  --color-tertiary: var(--rx-blue);
   --color-positive: var(--rx-green);
   --color-negative: var(--rx-pink);
   --color-badge: var(--badge-bg);
@@ -146,8 +142,7 @@
       to right,
       var(--rx-sand) 10%,
       var(--rx-pink) 40%,
-      var(--rx-blue) 70%,
-      var(--rx-cyan-deep) 100%
+      var(--rx-blue) 100%
     );
   }
 }

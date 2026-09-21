@@ -22,53 +22,15 @@ export interface RoleMeta {
   /** Indexer GraphQL enum value. */
   gql: string
   label: string
-  description: string
 }
 
 export const ROLES: readonly RoleMeta[] = [
-  {
-    index: 0,
-    idl: 'regionalOperator',
-    gql: 'REGIONAL_OPERATOR',
-    label: 'Regional Operator',
-    description:
-      'Manages a region: claims the operator seat, registers locations, sets listing duration and tax.',
-  },
-  {
-    index: 1,
-    idl: 'realEstateInvestor',
-    gql: 'REAL_ESTATE_INVESTOR',
-    label: 'Real Estate Investor',
-    description: 'Buys, claims, relists and votes on fractional property shares.',
-  },
-  {
-    index: 2,
-    idl: 'realEstateDeveloper',
-    gql: 'REAL_ESTATE_DEVELOPER',
-    label: 'Real Estate Developer',
-    description: 'Lists properties for fractional sale.',
-  },
-  {
-    index: 3,
-    idl: 'lawyer',
-    gql: 'LAWYER',
-    label: 'Lawyer',
-    description: "Represents the developer or SPV side of a property sale's legal process.",
-  },
-  {
-    index: 4,
-    idl: 'lettingAgent',
-    gql: 'LETTING_AGENT',
-    label: 'Letting Agent',
-    description: 'Manages let properties and distributes rental income to share holders.',
-  },
-  {
-    index: 5,
-    idl: 'spvConfirmation',
-    gql: 'SPV_CONFIRMATION',
-    label: 'SPV Confirmation',
-    description: 'Confirms that the SPV for a sold-out property has been created.',
-  },
+  { index: 0, idl: 'regionalOperator', gql: 'REGIONAL_OPERATOR', label: 'Regional Operator' },
+  { index: 1, idl: 'realEstateInvestor', gql: 'REAL_ESTATE_INVESTOR', label: 'Real Estate Investor' },
+  { index: 2, idl: 'realEstateDeveloper', gql: 'REAL_ESTATE_DEVELOPER', label: 'Real Estate Developer' },
+  { index: 3, idl: 'lawyer', gql: 'LAWYER', label: 'Lawyer' },
+  { index: 4, idl: 'lettingAgent', gql: 'LETTING_AGENT', label: 'Letting Agent' },
+  { index: 5, idl: 'spvConfirmation', gql: 'SPV_CONFIRMATION', label: 'SPV Confirmation' },
 ] as const
 
 export interface PermissionMeta {

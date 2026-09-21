@@ -35,9 +35,7 @@ const clusterLabel = computed(
     <aside
       class="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-line/50 bg-surface md:flex"
     >
-      <div class="flex h-16 items-center gap-2 border-b border-line/50 px-5">
-        <img src="/logo-black.svg" alt="realXmarket" class="h-8 w-8 dark:hidden" />
-        <img src="/logo-white.svg" alt="realXmarket" class="hidden h-8 w-8 dark:block" />
+      <div class="flex h-16 items-center border-b border-line/50 px-5">
         <div class="flex flex-col">
           <span class="text-base font-extrabold leading-tight">realXmarket</span>
           <span class="text-xs text-ink-muted">Role Dashboard</span>

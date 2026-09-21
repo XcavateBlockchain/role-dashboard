@@ -173,10 +173,6 @@ async function runConfirm() {
   <div class="flex flex-col gap-4">
     <!-- Header -->
     <div class="flex flex-wrap items-start justify-between gap-3">
-      <p class="max-w-2xl text-sm text-ink-muted">
-        Whitelist role assignments on the xcavate-whitelist program. Admins assign roles,
-        manage compliance and remove roles; role holders can renounce their own.
-      </p>
       <span :title="isAdmin ? undefined : adminHint">
         <UiButton :disabled="!isAdmin" @click="assignOpen = true">Assign role</UiButton>
       </span>
@@ -245,11 +241,7 @@ async function runConfirm() {
         <UiButton variant="secondary" @click="fetchAssignments">Retry</UiButton>
       </div>
 
-      <UiEmptyState
-        v-else-if="rows.length === 0"
-        title="No assignments match"
-        hint="Adjust the filters or assign a new role."
-      >
+      <UiEmptyState v-else-if="rows.length === 0" title="No assignments match">
         <template #icon>
           <NavIcon name="roles" :size="36" />
         </template>
@@ -306,7 +298,7 @@ async function runConfirm() {
                     <span v-else class="text-xs text-ink-faint">—</span>
                   </template>
                   <template v-else-if="row.active && rowRoleIndex(row) !== null">
-                    <span :title="isAdmin ? undefined : adminHint">
+                    <span :title="!isAdmin ? adminHint : undefined">
                       <UiButton
                         v-if="row.permission === 'REVOKED'"
                         variant="ghost"
@@ -318,7 +310,7 @@ async function runConfirm() {
                         Set compliant
                       </UiButton>
                     </span>
-                    <span :title="isAdmin ? undefined : adminHint">
+                    <span :title="!isAdmin ? adminHint : undefined">
                       <UiButton
                         v-if="row.permission === 'COMPLIANT'"
                         variant="danger"
@@ -329,7 +321,7 @@ async function runConfirm() {
                         Revoke access
                       </UiButton>
                     </span>
-                    <span :title="isAdmin ? undefined : adminHint">
+                    <span :title="!isAdmin ? adminHint : undefined">
                       <UiButton
                         variant="danger"
                         class="h-8! px-3! text-xs!"

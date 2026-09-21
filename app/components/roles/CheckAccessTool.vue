@@ -39,9 +39,6 @@ async function check() {
 <template>
   <UiCardTint>
     <p class="text-sm font-extrabold">Check access</p>
-    <p class="mt-0.5 text-xs text-ink-muted">
-      Look up whether an address currently holds a role and its compliance state.
-    </p>
 
     <form
       class="mt-3 flex flex-wrap items-end gap-3"
