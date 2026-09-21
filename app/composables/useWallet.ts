@@ -90,7 +90,7 @@ function friendlyError(err: unknown): Error {
   return err instanceof Error ? err : new Error(String(err))
 }
 
-/** Set fee payer + a fresh blockhash, then serialize the message for signing. */
+/** Set fee payer + a fresh blockhash, then serialize the transaction for signing. */
 async function prepareMessage(
   tx: Transaction | VersionedTransaction,
   account: WalletAccount,
@@ -100,10 +100,16 @@ async function prepareMessage(
   if (tx instanceof Transaction) {
     tx.feePayer ??= new PublicKey(account.address)
     tx.recentBlockhash = blockhash
-    return { bytes: tx.serializeMessage(), blockhash, lastValidBlockHeight }
+    // Wallet Standard expects a serialized *transaction* (signatures + message),
+    // not bare message bytes.
+    return {
+      bytes: tx.serialize({ requireAllSignatures: false, verifySignatures: false }),
+      blockhash,
+      lastValidBlockHeight,
+    }
   }
   tx.message.recentBlockhash = blockhash
-  return { bytes: tx.message.serialize(), blockhash, lastValidBlockHeight }
+  return { bytes: tx.serialize(), blockhash, lastValidBlockHeight }
 }
 
 export function useWallet(): UseWallet {
