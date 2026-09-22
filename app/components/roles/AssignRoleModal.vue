@@ -53,7 +53,7 @@ async function submit() {
 </script>
 
 <template>
-  <UiModal :open="open" @close="emit('close')">
+  <UiModal :open="open" footer-align="start" @close="emit('close')">
     <template #title>Assign role</template>
 
     <form class="flex flex-col gap-4" @submit.prevent="submit">
@@ -74,7 +74,6 @@ async function submit() {
     </form>
 
     <template #footer>
-      <UiButton variant="ghost" :disabled="submitting" @click="emit('close')">Cancel</UiButton>
       <UiButton
         type="submit"
         :loading="submitting"
@@ -83,6 +82,7 @@ async function submit() {
       >
         Assign role
       </UiButton>
+      <UiButton variant="ghost" :disabled="submitting" @click="emit('close')">Cancel</UiButton>
     </template>
   </UiModal>
 </template>

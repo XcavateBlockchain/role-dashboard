@@ -20,10 +20,6 @@ function isActive(to: string) {
   return to === '/' ? route.path === '/' : route.path.startsWith(to)
 }
 
-const pageTitle = computed(
-  () => NAV.find((item) => isActive(item.to))?.label ?? config.public.appName,
-)
-
 const clusterLabel = computed(
   () => config.public.cluster.charAt(0).toUpperCase() + config.public.cluster.slice(1),
 )
@@ -58,10 +54,7 @@ const clusterLabel = computed(
         </NuxtLink>
       </nav>
       <div class="flex flex-col gap-3 border-t border-line/50 p-4">
-        <div class="flex min-w-0 items-center justify-between gap-2">
-          <h1 class="truncate text-sm font-extrabold">{{ pageTitle }}</h1>
-          <UiBadge tone="cyan" class="shrink-0">{{ clusterLabel }}</UiBadge>
-        </div>
+        <UiBadge tone="cyan" class="shrink-0">{{ clusterLabel }}</UiBadge>
         <div class="flex items-center gap-2">
           <WalletButton class="min-w-0 flex-1" />
           <ThemeToggle />

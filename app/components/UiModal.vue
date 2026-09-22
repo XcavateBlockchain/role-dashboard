@@ -2,6 +2,7 @@
 const props = defineProps<{
   open: boolean
   title?: string
+  footerAlign?: 'start' | 'end'
 }>()
 
 const emit = defineEmits<{ close: [] }>()
@@ -69,7 +70,11 @@ onBeforeUnmount(() => {
           </button>
         </div>
         <slot />
-        <div v-if="$slots.footer" class="mt-5 flex justify-end gap-2">
+        <div
+          v-if="$slots.footer"
+          class="mt-5 flex gap-2"
+          :class="footerAlign === 'start' ? 'justify-start' : 'justify-end'"
+        >
           <slot name="footer" />
         </div>
       </div>
