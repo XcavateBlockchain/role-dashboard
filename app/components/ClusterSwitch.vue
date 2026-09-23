@@ -20,7 +20,7 @@ function select(cluster: ClusterOption) {
 
 <template>
   <div
-    class="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-badge p-0.5"
+    class="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-transparent p-0.5"
     role="group"
     aria-label="Solana cluster"
   >
