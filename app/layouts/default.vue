@@ -19,10 +19,6 @@ const NAV: { to: string; label: string; icon: NavIconName }[] = [
 function isActive(to: string) {
   return to === '/' ? route.path === '/' : route.path.startsWith(to)
 }
-
-const clusterLabel = computed(
-  () => config.public.cluster.charAt(0).toUpperCase() + config.public.cluster.slice(1),
-)
 </script>
 
 <template>
@@ -54,7 +50,7 @@ const clusterLabel = computed(
         </NuxtLink>
       </nav>
       <div class="flex flex-col gap-3 border-t border-line/50 p-4">
-        <UiBadge tone="cyan" class="shrink-0">{{ clusterLabel }}</UiBadge>
+        <ClusterSwitch />
         <div class="flex items-center gap-2">
           <WalletButton class="min-w-0 flex-1" />
           <ThemeToggle />
