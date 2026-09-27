@@ -35,8 +35,9 @@ export interface WalletOption {
  * - `wallets` lists detected browser wallets (Wallet Standard auto-discovery).
  * - `connect(name)` connects and stores the choice for eager reconnect on
  *   reload; `disconnect()` clears it.
- * - With exactly one detected wallet and no saved choice, it connects
- *   automatically on load instead of waiting for the Connect wallet button.
+ * - With exactly one detected wallet, it connects automatically on load
+ *   instead of waiting for the Connect wallet button (unless the silent
+ *   reconnect of a saved wallet already succeeded).
  * - `sendTransaction` signs with the connected wallet and submits through the
  *   app's RPC proxy, returning the confirmed transaction signature.
  */
@@ -259,19 +260,24 @@ export function useWallet(): UseWallet {
   }
 
   /**
-   * Single-wallet convenience: when no choice was saved and exactly one usable
-   * wallet is detected, connect to it without making the user open the modal.
-   * A rejection or failure just leaves the app disconnected — the manual
-   * Connect wallet flow stays available.
+   * Single-wallet convenience: when exactly one usable wallet is detected,
+   * connect to it on page load without making the user open the modal.
+   * Runs alongside autoReconnect: if the silent reconnect already connected,
+   * this does nothing. A rejection or failure just leaves the app
+   * disconnected — the manual Connect wallet flow stays available.
    */
   async function autoConnectSingle() {
     if (autoConnectSingleAttempted) return
     autoConnectSingleAttempted = true
-    // A saved choice belongs to autoReconnect's silent path.
-    if (localStorage.getItem(STORAGE_KEY) || activeWallet) return
     // Wallets inject/register asynchronously; retry briefly while the list settles.
-    for (let attempt = 0; attempt < 20; attempt++) {
-      if (activeWallet || connecting.value) return
+    for (let attempt = 0; attempt < 50; attempt++) {
+      if (activeWallet) return
+      // Wait out an in-flight (silent reconnect or manual) connect attempt.
+      if (connecting.value) {
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        continue
+      }
+      if (wallets.value.length > 1) return
       const [only] = wallets.value
       if (wallets.value.length === 1 && only) {
         try {
@@ -281,7 +287,6 @@ export function useWallet(): UseWallet {
         }
         return
       }
-      if (wallets.value.length > 1) return
       await new Promise((resolve) => setTimeout(resolve, 100))
     }
   }
