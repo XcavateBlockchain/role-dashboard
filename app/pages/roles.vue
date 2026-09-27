@@ -254,9 +254,9 @@ async function runConfirm() {
               <th>User</th>
               <th>Role</th>
               <th>Compliance</th>
-              <th>Assigned by</th>
-              <th>Assigned</th>
-              <th>Status</th>
+              <th class="hidden lg:table-cell">Assigned by</th>
+              <th class="hidden lg:table-cell">Assigned</th>
+              <th class="hidden lg:table-cell">Status</th>
               <th class="text-right">Actions</th>
             </tr>
           </template>
@@ -271,13 +271,13 @@ async function runConfirm() {
                   {{ row.permission === 'COMPLIANT' ? 'Compliant' : 'Revoked' }}
                 </UiBadge>
               </td>
-              <td><UiAddress :address="row.assignedBy" link /></td>
-              <td>
+              <td class="hidden lg:table-cell"><UiAddress :address="row.assignedBy" link /></td>
+              <td class="hidden lg:table-cell">
                 <span class="text-ink-muted" :title="formatDateTime(row.assignedAt)">
                   {{ timeAgo(row.assignedAt) }}
                 </span>
               </td>
-              <td>
+              <td class="hidden lg:table-cell">
                 <UiBadge v-if="row.active" tone="success">Active</UiBadge>
                 <UiBadge v-else-if="row.removalKind === 'REMOVED'" tone="error">Removed</UiBadge>
                 <UiBadge v-else tone="neutral">Renounced</UiBadge>

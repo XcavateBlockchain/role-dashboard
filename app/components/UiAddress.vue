@@ -38,8 +38,8 @@ async function copy() {
 </script>
 
 <template>
-  <span class="inline-flex items-center gap-1">
-    <span class="font-mono text-[13px]" :title="address">{{ short }}</span>
+  <span class="inline-flex items-center gap-1 max-lg:whitespace-nowrap">
+    <span class="font-mono text-[13px] max-lg:whitespace-nowrap" :title="address">{{ short }}</span>
     <button
       type="button"
       class="inline-flex h-6 w-6 items-center justify-center rounded-full transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"

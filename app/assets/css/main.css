@@ -146,3 +146,53 @@
     );
   }
 }
+
+@layer components {
+  /*
+   * Edge-fade affordance for horizontally scrollable tables, phones/tablets
+   * only. Surface-colored covers scroll with the content (attachment: local)
+   * and hide the pinned shadow gradients until that edge actually has content
+   * underneath — classic pure-CSS scroll shadow. Desktop keeps the plain
+   * scroller untouched.
+   */
+  @media (max-width: 1023px) {
+    .table-scroll {
+      background:
+        linear-gradient(to right, var(--surface) 30%, transparent),
+        linear-gradient(to left, var(--surface) 30%, transparent),
+        linear-gradient(to right, rgb(0 0 0 / 0.18), transparent),
+        linear-gradient(to left, rgb(0 0 0 / 0.18), transparent);
+      background-position:
+        left center,
+        right center,
+        left center,
+        right center;
+      background-repeat: no-repeat;
+      background-size:
+        20px 100%,
+        20px 100%,
+        8px 100%,
+        8px 100%;
+      background-attachment: local, local, scroll, scroll;
+    }
+    .dark .table-scroll {
+      background:
+        linear-gradient(to right, var(--surface) 30%, transparent),
+        linear-gradient(to left, var(--surface) 30%, transparent),
+        linear-gradient(to right, rgb(255 255 255 / 0.22), transparent),
+        linear-gradient(to left, rgb(255 255 255 / 0.22), transparent);
+      background-position:
+        left center,
+        right center,
+        left center,
+        right center;
+      background-repeat: no-repeat;
+      background-size:
+        20px 100%,
+        20px 100%,
+        8px 100%,
+        8px 100%;
+      background-attachment: local, local, scroll, scroll;
+    }
+  }
+}

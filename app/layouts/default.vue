@@ -59,7 +59,21 @@ function isActive(to: string) {
     </aside>
 
     <div class="flex min-h-screen flex-col md:pl-64">
-      <main class="flex-1 px-4 pb-24 pt-5 md:px-6 md:pb-6">
+      <!-- Top bar (small screens only): brand + wallet + theme -->
+      <header
+        class="sticky top-0 z-20 flex items-center gap-3 border-b border-line/50 bg-page px-4 py-1.5 md:hidden"
+      >
+        <div class="flex min-w-0 flex-col leading-tight">
+          <span class="truncate text-sm font-extrabold">realXmarket</span>
+          <span class="text-[10px] text-ink-muted">Role Dashboard</span>
+        </div>
+        <div class="ml-auto flex shrink-0 items-center gap-2">
+          <WalletButton />
+          <ThemeToggle />
+        </div>
+      </header>
+
+      <main class="flex-1 px-4 pb-24 pt-4 md:px-6 md:pb-6 md:pt-5">
         <slot />
       </main>
 
@@ -73,14 +87,14 @@ function isActive(to: string) {
 
     <!-- Bottom nav (small screens) -->
     <nav
-      class="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-line/50 bg-surface px-2 py-1.5 shadow-bar md:hidden"
+      class="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-line/50 bg-surface px-2 pt-1.5 shadow-bar md:hidden pb-[max(0.375rem,env(safe-area-inset-bottom))]"
       aria-label="Main"
     >
       <NuxtLink
         v-for="item in NAV"
         :key="item.to"
         :to="item.to"
-        class="flex flex-col items-center gap-0.5 rounded-card py-1 text-[10px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        class="flex flex-col items-center gap-0.5 whitespace-nowrap rounded-card py-1 text-[10px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         :class="isActive(item.to) ? 'text-ink' : 'text-ink-muted'"
       >
         <span

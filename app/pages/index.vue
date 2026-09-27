@@ -197,35 +197,37 @@ onMounted(() => {
           >
             <UiBadge :tone="actionTone(action)">{{ actionLabel(action.type) }}</UiBadge>
             <UiAddress v-if="action.subject" :address="action.subject" />
-            <span v-if="action.role" class="text-xs text-ink-muted">{{
+            <span v-if="action.role" class="whitespace-nowrap text-xs text-ink-muted">{{
               roleLabel(action.role)
             }}</span>
-            <span class="ml-auto shrink-0 text-xs text-ink-muted">{{
-              timeAgo(action.blockTime)
-            }}</span>
-            <a
-              :href="explorerTxUrl(action.txSignature, cluster)"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="View transaction on Solana Explorer"
-              class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-ink-muted transition hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
+            <span class="ml-auto flex shrink-0 items-center gap-1">
+              <span class="whitespace-nowrap text-xs text-ink-muted">{{
+                timeAgo(action.blockTime)
+              }}</span>
+              <a
+                :href="explorerTxUrl(action.txSignature, cluster)"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View transaction on Solana Explorer"
+                class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-ink-muted transition hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
-                <path
-                  d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-                />
-              </svg>
-            </a>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                  />
+                </svg>
+              </a>
+            </span>
           </div>
         </div>
         <UiEmptyState v-else title="No activity yet">

@@ -170,8 +170,8 @@ onBeforeUnmount(stopAutoRefresh)
               <th>Subject</th>
               <th>Role</th>
               <th>Permission</th>
-              <th>Actor</th>
-              <th>Slot</th>
+              <th class="hidden lg:table-cell">Actor</th>
+              <th class="hidden lg:table-cell">Slot</th>
               <th>Tx</th>
             </tr>
           </template>
@@ -200,10 +200,10 @@ onBeforeUnmount(stopAutoRefresh)
                 </UiBadge>
                 <span v-else class="text-ink-muted">—</span>
               </td>
-              <td>
+              <td class="hidden lg:table-cell">
                 <UiAddress :address="action.actor" />
               </td>
-              <td class="whitespace-nowrap font-mono text-[13px]">{{ action.slot }}</td>
+              <td class="hidden whitespace-nowrap font-mono text-[13px] lg:table-cell">{{ action.slot }}</td>
               <td>
                 <ActivityTxLink :signature="action.txSignature" :chars="4" />
               </td>

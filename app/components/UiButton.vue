@@ -30,7 +30,7 @@ const VARIANTS: Record<UiButtonVariant, string> = {
     :type="props.type"
     :disabled="disabled || loading"
     :aria-busy="loading || undefined"
-    class="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-button px-6 text-sm font-extrabold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-page disabled:cursor-not-allowed disabled:opacity-70"
+    class="inline-flex h-12 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-button px-6 text-sm font-extrabold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-page disabled:cursor-not-allowed disabled:opacity-70"
     :class="VARIANTS[props.variant]"
   >
     <UiSpinner v-if="loading" :size="18" />

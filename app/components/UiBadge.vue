@@ -14,7 +14,7 @@ const TONES: Record<UiBadgeTone, string> = {
 
 <template>
   <span
-    class="inline-flex items-center gap-1 rounded-badge px-2 py-0.5 text-xs font-bold"
+    class="inline-flex items-center gap-1 rounded-badge px-2 py-0.5 text-xs font-bold max-lg:shrink-0 max-lg:whitespace-nowrap"
     :class="TONES[props.tone]"
   >
     <slot />

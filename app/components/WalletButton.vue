@@ -28,14 +28,19 @@ async function onDisconnect() {
 
 <template>
   <div class="relative">
-    <UiButton v-if="!connected" :loading="connecting" class="w-full" @click="modalOpen = true">
+    <UiButton
+      v-if="!connected"
+      :loading="connecting"
+      class="w-full max-sm:h-10 max-sm:px-4"
+      @click="modalOpen = true"
+    >
       Connect wallet
     </UiButton>
 
     <button
       v-else
       type="button"
-      class="inline-flex h-12 w-full items-center gap-2 rounded-button border-2 border-primary px-4 text-sm font-extrabold text-primary transition hover:bg-surface-tint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-page"
+      class="inline-flex h-12 w-full items-center gap-2 whitespace-nowrap rounded-button border-2 border-primary px-4 text-sm font-extrabold text-primary transition hover:bg-surface-tint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-page max-sm:h-10 max-sm:px-3"
       aria-haspopup="menu"
       :aria-expanded="menuOpen"
       @click="menuOpen = !menuOpen"

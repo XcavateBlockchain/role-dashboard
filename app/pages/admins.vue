@@ -242,11 +242,11 @@ async function confirmRemove() {
           <template #thead>
             <tr>
               <th>Admin</th>
-              <th>Added by</th>
-              <th>Added</th>
+              <th class="hidden lg:table-cell">Added by</th>
+              <th class="hidden lg:table-cell">Added</th>
               <th>Status</th>
-              <th>Removed</th>
-              <th class="text-right">Actions</th>
+              <th class="hidden lg:table-cell">Removed</th>
+              <th class="text-right max-md:sticky max-md:right-0 max-md:bg-surface">Actions</th>
             </tr>
           </template>
           <template #tbody>
@@ -260,10 +260,10 @@ async function confirmRemove() {
                   </UiBadge>
                 </div>
               </td>
-              <td>
+              <td class="hidden lg:table-cell">
                 <UiAddress :address="row.addedBy" />
               </td>
-              <td>
+              <td class="hidden lg:table-cell">
                 <span class="text-ink-muted" :title="formatDateTime(row.addedAt)">
                   {{ timeAgo(row.addedAt) }}
                 </span>
@@ -273,7 +273,7 @@ async function confirmRemove() {
                   {{ row.active ? 'Active' : 'Removed' }}
                 </UiBadge>
               </td>
-              <td>
+              <td class="hidden lg:table-cell">
                 <span
                   v-if="row.removedAt"
                   class="text-ink-muted"
@@ -283,7 +283,7 @@ async function confirmRemove() {
                 </span>
                 <span v-else class="text-ink-faint">—</span>
               </td>
-              <td class="text-right">
+              <td class="text-right max-md:sticky max-md:right-0 max-md:bg-surface">
                 <button
                   v-if="isAuthority && row.active"
                   type="button"
