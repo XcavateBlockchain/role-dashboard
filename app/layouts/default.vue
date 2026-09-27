@@ -19,12 +19,15 @@ const NAV: { to: string; label: string; icon: NavIconName }[] = [
 function isActive(to: string) {
   return to === '/' ? route.path === '/' : route.path.startsWith(to)
 }
+
+const sidebarIsVisible = computed(() => route.query.sidebarIsVisible !== 'false')
 </script>
 
 <template>
   <div class="min-h-screen bg-page text-ink">
     <!-- Sidebar (md and up) -->
     <aside
+      v-if="sidebarIsVisible"
       class="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-line/50 bg-surface md:flex"
     >
       <div class="flex h-16 items-center border-b border-line/50 px-5">
@@ -55,15 +58,12 @@ function isActive(to: string) {
       </div>
     </aside>
 
-    <div class="flex min-h-screen flex-col md:pl-64">
+    <div class="flex min-h-screen flex-col" :class="sidebarIsVisible ? 'md:pl-64' : ''">
       <!-- Top bar (small screens only): brand + wallet + theme -->
       <header
         class="sticky top-0 z-20 flex items-center gap-3 border-b border-line/50 bg-page px-4 py-1.5 md:hidden"
       >
-        <div class="flex min-w-0 flex-col leading-tight">
-          <span class="truncate text-sm font-extrabold">realXmarket</span>
-          <span class="text-[10px] text-ink-muted">Role Dashboard</span>
-        </div>
+        <span class="truncate text-sm font-extrabold">Roles</span>
         <div class="ml-auto flex shrink-0 items-center gap-2">
           <WalletButton />
           <ThemeToggle />
