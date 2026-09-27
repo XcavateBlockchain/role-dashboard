@@ -21,6 +21,7 @@ function isActive(to: string) {
 }
 
 const sidebarIsVisible = computed(() => route.query.sidebarIsVisible !== 'false')
+const headerIsVisible = computed(() => route.query.headerIsVisible !== 'false')
 </script>
 
 <template>
@@ -61,6 +62,7 @@ const sidebarIsVisible = computed(() => route.query.sidebarIsVisible !== 'false'
     <div class="flex min-h-screen flex-col" :class="sidebarIsVisible ? 'md:pl-64' : ''">
       <!-- Top bar (small screens only): brand + wallet + theme -->
       <header
+        v-if="headerIsVisible"
         class="sticky top-0 z-20 flex items-center gap-3 border-b border-line/50 bg-page px-4 py-1.5 md:hidden"
       >
         <span class="truncate text-sm font-extrabold">Roles</span>
