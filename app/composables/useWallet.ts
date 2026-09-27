@@ -35,6 +35,8 @@ export interface WalletOption {
  * - `wallets` lists detected browser wallets (Wallet Standard auto-discovery).
  * - `connect(name)` connects and stores the choice for eager reconnect on
  *   reload; `disconnect()` clears it.
+ * - With exactly one detected wallet and no saved choice, it connects
+ *   automatically on load instead of waiting for the Connect wallet button.
  * - `sendTransaction` signs with the connected wallet and submits through the
  *   app's RPC proxy, returning the confirmed transaction signature.
  */
@@ -63,6 +65,7 @@ let offRegister: (() => void) | null = null
 let offUnregister: (() => void) | null = null
 let listenersAttached = false
 let autoReconnectAttempted = false
+let autoConnectSingleAttempted = false
 
 function isUsable(wallet: Wallet): boolean {
   return (
@@ -255,6 +258,34 @@ export function useWallet(): UseWallet {
     }
   }
 
+  /**
+   * Single-wallet convenience: when no choice was saved and exactly one usable
+   * wallet is detected, connect to it without making the user open the modal.
+   * A rejection or failure just leaves the app disconnected — the manual
+   * Connect wallet flow stays available.
+   */
+  async function autoConnectSingle() {
+    if (autoConnectSingleAttempted) return
+    autoConnectSingleAttempted = true
+    // A saved choice belongs to autoReconnect's silent path.
+    if (localStorage.getItem(STORAGE_KEY) || activeWallet) return
+    // Wallets inject/register asynchronously; retry briefly while the list settles.
+    for (let attempt = 0; attempt < 20; attempt++) {
+      if (activeWallet || connecting.value) return
+      const [only] = wallets.value
+      if (wallets.value.length === 1 && only) {
+        try {
+          await connect(only.name)
+        } catch {
+          // Rejected or failed — stay disconnected.
+        }
+        return
+      }
+      if (wallets.value.length > 1) return
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+  }
+
   async function sendTransaction(tx: Transaction | VersionedTransaction): Promise<string> {
     const wallet = activeWallet
     const account = activeAccount
@@ -312,6 +343,7 @@ export function useWallet(): UseWallet {
       syncWalletOptions()
     })
     void autoReconnect()
+    void autoConnectSingle()
   }
 
   // Plain refs satisfy Readonly<Ref<…>> (a readonly() wrapper would wrap the
